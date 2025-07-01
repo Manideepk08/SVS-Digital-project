@@ -18,7 +18,7 @@ export default function Header() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50">
+    <header className="bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center space-x-3">
@@ -37,7 +37,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-semibold transition-colors ${
                   isActive(item.href) ? 'text-blue-600 bg-blue-50' : ''
                 }`}
               >
