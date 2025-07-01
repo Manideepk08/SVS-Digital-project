@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -22,39 +21,39 @@ import AdminLoginPage from './pages/admin/AdminLoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
   return (
     <ToastProvider>
       <AuthProvider>
         <CartProvider>
-          <Router>
-            <div className="min-h-screen bg-gray-50">
-              <Header />
-              <main>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  {/* Admin routes */}
-                  <Route path="/admin" element={<AdminLayout />}>
-                    <Route path="login" element={<AdminLoginPage />} />
-                    <Route element={<ProtectedRoute />}>
-                      <Route index element={<Dashboard />} />
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="customers" element={<Customers />} />
-                      <Route path="orders" element={<Orders />} />
-                      <Route path="categories" element={<Categories />} />
-                      <Route path="settings" element={<Settings />} />
-                    </Route>
+          <div className="min-h-screen bg-gray-50">
+            {!isAdminRoute && <Header />}
+            <main>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                {/* Admin routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route path="login" element={<AdminLoginPage />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="customers" element={<Customers />} />
+                    <Route path="orders" element={<Orders />} />
+                    <Route path="categories" element={<Categories />} />
+                    <Route path="settings" element={<Settings />} />
                   </Route>
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          </Router>
+                </Route>
+              </Routes>
+            </main>
+            <Footer />
+          </div>
         </CartProvider>
       </AuthProvider>
     </ToastProvider>

@@ -4,6 +4,8 @@ import { orders as allOrders, Order } from '../../data/orders';
 
 const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Customer | null; onClose: () => void; onSave: (customer: Customer) => void; orders: Order[] }) => {
   const [formData, setFormData] = useState<Customer | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const customerOrders = useMemo(() => {
     if (!customer) return [];
     return orders.filter(order => order.customerName === customer.name);
@@ -30,54 +32,91 @@ const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Cu
 
   if (!customer || !formData) return null;
   return (
-  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-    <div className="bg-white p-4 rounded-lg shadow-2xl max-w-sm w-full">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">Edit Customer</h2>
-      <div className="space-y-2">
-        <div><label className="font-semibold text-sm">Name:</label><input type="text" name="name" value={formData.name} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">Email:</label><input type="email" name="email" value={formData.email} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">Phone:</label><input type="text" name="phone" value={formData.phone} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">Street:</label><input type="text" name="address.street" value={formData.address.street} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">City:</label><input type="text" name="address.city" value={formData.address.city} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">State:</label><input type="text" name="address.state" value={formData.address.state} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-        <div><label className="font-semibold text-sm">Zip Code:</label><input type="text" name="address.zipCode" value={formData.address.zipCode} onChange={handleChange} className="border p-1 rounded w-full text-sm"/></div>
-      </div>
-      <div className="mt-4">
-        <h3 className="text-base font-bold text-gray-700 mb-2">Order History</h3>
-        {customerOrders.length > 0 ? (
-          <div className="max-h-32 overflow-y-auto border rounded-lg mt-2">
-            <table className="min-w-full text-xs">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Order ID</th>
-                  <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                  <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Total</th>
-                  <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                {customerOrders.map(order => (
-                  <tr key={order.id}>
-                    <td className="px-2 py-1 border-b">{order.id}</td>
-                    <td className="px-2 py-1 border-b">{order.date}</td>
-                    <td className="px-2 py-1 border-b">₹{order.total.toFixed(2)}</td>
-                    <td className="px-2 py-1 border-b">{order.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-stretch justify-stretch">
+    <div className="bg-white w-full h-full flex flex-col justify-center items-center p-0 m-0 rounded-none shadow-none">
+      <div className="w-full max-w-4xl p-12">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Customer Details</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6 items-start">
+          {/* Left: Customer Details */}
+          <div className="space-y-4">
+            <div><label className="font-semibold text-sm">Name:</label><input type="text" name="name" value={formData.name} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+            <div><label className="font-semibold text-sm">Email:</label><input type="email" name="email" value={formData.email} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+            <div><label className="font-semibold text-sm">Phone:</label><input type="text" name="phone" value={formData.phone} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+            <div><label className="font-semibold text-sm">Street:</label><input type="text" name="address.street" value={formData.address.street} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+            <div className="grid grid-cols-3 gap-2">
+              <div><label className="font-semibold text-sm">City:</label><input type="text" name="address.city" value={formData.address.city} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+              <div><label className="font-semibold text-sm">State:</label><input type="text" name="address.state" value={formData.address.state} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+              <div><label className="font-semibold text-sm">Zip Code:</label><input type="text" name="address.zipCode" value={formData.address.zipCode} onChange={handleChange} className="border p-1 rounded w-full text-sm" readOnly={!isEditing}/></div>
+            </div>
           </div>
-        ) : (
-          <p className="text-xs">No orders found for this customer.</p>
-        )}
-      </div>
-      <div className="mt-4 flex justify-end gap-2">
-        <button onClick={onClose} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded text-sm">
-          Cancel
-        </button>
-        <button onClick={() => onSave(formData)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm">
-          Save
-        </button>
+          {/* Right: Order History */}
+          <div className="mt-0">
+            <h3 className="text-2xl font-bold text-gray-700 mb-4">Order History</h3>
+            {customerOrders.length > 0 ? (
+              <div className="max-h-96 overflow-y-auto border rounded-lg mt-2 bg-white">
+                <table className="min-w-full text-xs">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Order ID</th>
+                      <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                      <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Total</th>
+                      <th className="px-2 py-1 text-left font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white">
+                    {customerOrders.map(order => (
+                      <React.Fragment key={order.id}>
+                        <tr>
+                          <td className="px-2 py-1 border-b">
+                            <button
+                              className="text-blue-700 underline hover:text-blue-900 cursor-pointer"
+                              onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                            >
+                              {order.id}
+                            </button>
+                          </td>
+                          <td className="px-2 py-1 border-b">{order.date}</td>
+                          <td className="px-2 py-1 border-b">₹{order.total.toFixed(2)}</td>
+                          <td className="px-2 py-1 border-b">{order.status}</td>
+                        </tr>
+                        {expandedOrderId === order.id && (
+                          <tr>
+                            <td colSpan={4} className="bg-gray-50 px-4 py-2 border-b">
+                              <div>
+                                <span className="font-semibold">Items Ordered:</span>
+                                <ul className="list-disc list-inside ml-4 mt-1">
+                                  {order.items.map(item => (
+                                    <li key={item.id}>{item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-xs">No orders found for this customer.</p>
+            )}
+          </div>
+        </div>
+        <div className="mt-8 flex justify-end gap-2">
+          <button onClick={onClose} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded text-lg">
+            Cancel
+          </button>
+          {isEditing ? (
+            <button onClick={() => { onSave(formData); setIsEditing(false); }} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg">
+              Save
+            </button>
+          ) : (
+            <button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded text-lg">
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   </div>
@@ -91,6 +130,7 @@ const CustomersPage: React.FC = () => {
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [segment, setSegment] = useState<'All' | 'HighSpenders' | 'FrequentBuyers' | 'Inactive'>('All');
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   // Helper: get last order date for a customer
   const getLastOrderDate = (customer: Customer) => {
@@ -216,7 +256,13 @@ const CustomersPage: React.FC = () => {
             {sortedAndFilteredCustomers.map((customer) => (
               <tr key={customer.id}>
                 <td className="px-5 py-4 border-b border-gray-200 bg-white text-sm">
-                  <p className="text-gray-900 whitespace-no-wrap">{customer.id}</p>
+                  <button
+                    onClick={() => handleEditCustomer(customer)}
+                    className="text-blue-700 underline hover:text-blue-900 cursor-pointer"
+                    title="View/Edit Customer"
+                  >
+                    {customer.id}
+                  </button>
                 </td>
                 <td className="px-5 py-4 border-b border-gray-200 bg-white text-sm">
                   <p className="text-gray-900 whitespace-no-wrap">{customer.name}</p>
@@ -228,12 +274,6 @@ const CustomersPage: React.FC = () => {
                   <p className="text-gray-900 whitespace-no-wrap">₹{customer.totalSpent.toFixed(2)}</p>
                 </td>
                 <td className="px-5 py-4 border-b border-gray-200 bg-white text-sm">
-                  <button 
-                    onClick={() => handleEditCustomer(customer)}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
-                  >
-                    Edit
-                  </button>
                   <button 
                     onClick={() => handleDeleteCustomer(customer.id)}
                     className="text-red-600 hover:text-red-900"

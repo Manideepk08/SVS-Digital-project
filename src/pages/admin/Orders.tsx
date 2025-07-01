@@ -1,59 +1,48 @@
 import React, { useState, useMemo } from 'react';
 import { orders as initialOrders, Order } from '../../data/orders';
+import { customers } from '../../data/customers';
 
-const getStatusBadge = (status: Order['status']) => {
-  const baseClasses = 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full';
-  switch (status) {
-    case 'Completed':
-      return `bg-gradient-to-r from-blue-500 to-green-400 text-white ${baseClasses}`;
-    case 'Shipped':
-      return `bg-gradient-to-r from-blue-500 to-green-400 text-white ${baseClasses}`;
-    case 'Pending':
-      return `bg-gradient-to-r from-blue-500 to-green-400 text-white ${baseClasses}`;
-    case 'Cancelled':
-      return `bg-gradient-to-r from-blue-500 to-green-400 text-white ${baseClasses}`;
-    default:
-      return `bg-gradient-to-r from-blue-500 to-green-400 text-white ${baseClasses}`;
-  }
-};
-
-const OrderDetailsModal = ({ order, onClose, onStatusChange }: { order: Order; onClose: () => void; onStatusChange: (orderId: string, newStatus: Order['status']) => void; }) => {
+const OrderDetailsModal = ({ order, onClose }: { order: Order; onClose: () => void; onStatusChange: (orderId: string, newStatus: Order['status']) => void; }) => {
+  const customer = customers.find(c => c.name === order.customerName);
+  const isDelivered = order.status === 'Completed';
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div className="bg-white p-8 rounded-lg shadow-2xl max-w-2xl w-full">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Order Details - {order.id}</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div><p className="font-semibold">Customer:</p> {order.customerName}</div>
-          <div><p className="font-semibold">Date:</p> {order.date}</div>
-          <div><p className="font-semibold">Total:</p> ₹{order.total.toFixed(2)}</div>
-          <div>
-            <p className="font-semibold">Status:</p>
-            <select
-              value={order.status}
-              onChange={(e) => onStatusChange(order.id, e.target.value as Order['status'])}
-              className="p-1 rounded text-xs bg-white text-gray-800 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="Pending">Pending</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-stretch justify-stretch">
+      <div className="bg-white w-full h-full flex flex-col justify-center items-center p-0 m-0 rounded-none shadow-none">
+        <div className="w-full max-w-5xl p-12">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Order Details - {order.id}</h2>
+          <div className="grid grid-cols-2 gap-8">
+            <div><p className="font-semibold">Customer Name:</p> {customer?.name || order.customerName}</div>
+            <div><p className="font-semibold">Order Date:</p> {order.date}</div>
+            <div><p className="font-semibold">Phone:</p> {customer?.phone || '-'}</div>
+            <div><p className="font-semibold">Email:</p> {customer?.email || '-'}</div>
+            <div><p className="font-semibold">Total:</p> ₹{order.total.toFixed(2)}</div>
+            <div>
+              <p className="font-semibold">Status:</p>
+              {isDelivered ? (
+                <span className="px-3 py-1 rounded bg-green-200 text-green-800 font-semibold">Delivered</span>
+              ) : (
+                <span className="px-2 py-1 rounded bg-gray-200 text-gray-800">{order.status}</span>
+              )}
+            </div>
+            {isDelivered && (
+              <div><p className="font-semibold">Delivered Date:</p> {order.date}</div>
+            )}
           </div>
+          <div className="mt-10">
+            <h3 className="text-2xl font-semibold text-gray-700 mb-4">Items Ordered</h3>
+            <ul className="list-disc list-inside text-lg">
+              {order.items.map(item => (
+                <li key={item.id} className="mb-2">{item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</li>
+              ))}
+            </ul>
+          </div>
+          <button 
+            onClick={onClose} 
+            className="mt-10 bg-gradient-to-r from-blue-500 to-green-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
+          >
+            Close
+          </button>
         </div>
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">Items Ordered</h3>
-          <ul className="list-disc list-inside">
-            {order.items.map(item => (
-              <li key={item.id} className="mb-1">{item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</li>
-            ))}
-          </ul>
-        </div>
-        <button 
-          onClick={onClose} 
-          className="mt-6 bg-gradient-to-r from-blue-500 to-green-400 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out"
-        >
-          Close
-        </button>
       </div>
     </div>
   );

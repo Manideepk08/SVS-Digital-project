@@ -39,14 +39,14 @@ const AdminLayout: React.FC = () => {
                 {item.name}
               </NavLink>
             ))}
+            <button
+              onClick={handleLogout}
+              className="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors text-left"
+            >
+              Log out
+            </button>
           </nav>
         </div>
-        <button
-          onClick={handleLogout}
-          className="mt-8 px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors"
-        >
-          Log out
-        </button>
       </aside>
       {/* Main Content */}
       <main className="flex-1 p-8">
