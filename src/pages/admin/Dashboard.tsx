@@ -2,18 +2,17 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { products as initialProducts } from '../../data/products';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 import ProductGrid from '../../components/ProductGrid';
-import AddProductForm from '../../components/AddProductForm';
 import { useToast } from '../../context/ToastContext';
 import { Product } from '../../types';
 import { products as hardcodedProducts } from '../../data/products';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem('products');
@@ -78,7 +77,7 @@ const Dashboard: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => navigate('/admin/dashboard/new-product')}
             className="bg-gradient-to-r from-blue-500 to-green-400 text-white px-4 py-2 rounded-lg shadow-md hover:opacity-90 transition flex items-center"
           >
             <FiPlus className="mr-2" />
@@ -124,24 +123,14 @@ const Dashboard: React.FC = () => {
       {/* Product Grid */}
       <ProductGrid
         products={sortedAndFilteredProducts}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={() => {}}
+        onDelete={() => {}}
         adminView
       />
       {sortedAndFilteredProducts.length === 0 && (
         <div className="text-center py-16 bg-white rounded-lg shadow-md border-2 border-red-400">
           <h2 className="text-2xl text-red-600 font-bold mb-2">No products found.</h2>
           <p className="text-gray-700 mb-4">Try clearing your search or filter using the button above.</p>
-        </div>
-      )}
-      {/* Add Product Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-          <AddProductForm
-            onAdd={handleAddProduct}
-            onClose={() => { setIsModalOpen(false); setEditingProduct(null); }}
-            initialData={editingProduct || undefined}
-          />
         </div>
       )}
     </div>
