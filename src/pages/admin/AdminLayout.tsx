@@ -24,6 +24,9 @@ const AdminLayout: React.FC = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-lg p-6 flex flex-col gap-4 justify-between min-h-screen">
         <div>
+          <div className="flex items-center justify-center mb-4">
+            <span className="text-3xl font-extrabold text-blue-600 tracking-wide">SVS <span className="text-green-500">Digitals</span></span>
+          </div>
           <h2 className="text-2xl font-bold mb-8 bg-gradient-to-r from-blue-500 to-green-400 text-white p-4 rounded-lg shadow">Admin Panel</h2>
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
