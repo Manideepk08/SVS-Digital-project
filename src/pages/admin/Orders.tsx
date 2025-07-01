@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { orders as initialOrders, Order } from '../../data/orders';
-import { useAuth } from '../../context/AuthContext';
 
 const getStatusBadge = (status: Order['status']) => {
   const baseClasses = 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full';
@@ -19,8 +18,6 @@ const getStatusBadge = (status: Order['status']) => {
 };
 
 const OrderDetailsModal = ({ order, onClose, onStatusChange }: { order: Order; onClose: () => void; onStatusChange: (orderId: string, newStatus: Order['status']) => void; }) => {
-  const { hasPermission } = useAuth();
-  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-2xl max-w-2xl w-full">
@@ -63,7 +60,6 @@ const OrderDetailsModal = ({ order, onClose, onStatusChange }: { order: Order; o
 };
 
 const OrdersPage: React.FC = () => {
-  const { hasPermission } = useAuth();
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Order; direction: string } | null>(null);
