@@ -1,56 +1,75 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight, Check, Award, Clock, Shield, Palette } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { products } from '../data/products';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import HeroCollage from "./HeroCollage";
+
+const productImages = [
+  { src: "/product images/t-shirts.png", name: "T-Shirts", category: "T-Shirt" },
+  { src: "/product images/mugs , cups , bottles.png", name: "Mugs & Bottles", category: "Mug" },
+  { src: "/product images/bussiness cards.png", name: "Business Cards", category: "Business Card" },
+  { src: "/product images/invitation cards.png", name: "Invitation Cards", category: "Decoration" },
+  { src: "/product images/school daires.png", name: "School Diaries", category: "Calendar" },
+  { src: "/product images/rings.png", name: "Rings", category: "Decoration" },
+  { src: "/product images/wedding card design.png", name: "Wedding Card Design", category: "Decoration" },
+  { src: "/product images/cups , bags.png", name: "Cups & Bags", category: "Mug" },
+  { src: "/product images/bottles , books.png", name: "Bottles & Books", category: "Mug" },
+  { src: "/product images/keychains , certificates.png", name: "Keychains & Certificates", category: "Decoration" },
+];
+
+const categories = ["All", "T-Shirt", "Mug", "Business Card", "Calendar", "Decoration"];
 
 export default function Home() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const filteredProducts =
+    selectedCategory === "All"
+      ? productImages
+      : productImages.filter((p) => p.category === selectedCategory);
+
   const featuredProducts = products.slice(0, 4);
 
+  // Animation state for features section
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [cursorX, setCursorX] = useState(0.5); // 0 (left) to 1 (right)
+
+  useEffect(() => {
+    // Check if features section is in view
+    const handleScroll = () => {
+      if (featuresRef.current) {
+        const rect = featuresRef.current.getBoundingClientRect();
+        const inViewNow = rect.top < window.innerHeight && rect.bottom > 0;
+        setInView(inViewNow);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // Mouse move effect for horizontal animation
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!featuresRef.current) return;
+      const rect = featuresRef.current.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        // Normalize cursor X position within the section (0 = left, 1 = right)
+        const x = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+        setCursorX(x);
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 via-blue-700 to-green-600 text-white py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                <span className="text-white">SVS</span>
-                <span className="text-green-300">digitals</span>
-              </h1>
-              <p className="text-xl mb-8 text-blue-100">
-                Professional printing and digital services in Hyderabad. From business cards to wedding invitations, 
-                we bring your ideas to life with premium quality and exceptional service.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/products"
-                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors"
-                >
-                  <span>Explore Services</span>
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-                <Link
-                  to="/contact"
-                  className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold text-center transition-colors"
-                >
-                  Get Quote
-                </Link>
-              </div>
-            </div>
-            <div className="relative">
-              <img
-                src="/Gemini_Generated_Image_izsnmjizsnmjizsn.jpeg"
-                alt="Professional printing services workspace"
-                className="rounded-lg shadow-2xl"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="bg-[#f9f6f2] min-h-screen">
+      <HeroCollage />
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50" ref={featuresRef}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose SVS Digitals?</h2>
@@ -58,47 +77,38 @@ export default function Home() {
               Located in Shaikpet, Hyderabad, we provide exceptional printing services with personalized attention.
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center p-6">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
-              <p className="text-gray-600">
-                High-quality materials and professional printing technology for superior results.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Quick Service</h3>
-              <p className="text-gray-600">
-                Fast turnaround times without compromising on quality and attention to detail.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Palette className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Custom Designs</h3>
-              <p className="text-gray-600">
-                Personalized designs and custom solutions tailored to your specific needs.
-              </p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-8 w-8 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Local Service</h3>
-              <p className="text-gray-600">
-                Conveniently located in Shaikpet, Hyderabad with personalized customer service.
-              </p>
-            </div>
+            {[
+              {
+                icon: <Award className="h-8 w-8 text-blue-600" />, bg: "bg-blue-100", title: "Premium Quality", desc: "High-quality materials and professional printing technology for superior results.",
+              },
+              {
+                icon: <Clock className="h-8 w-8 text-green-600" />, bg: "bg-green-100", title: "Quick Service", desc: "Fast turnaround times without compromising on quality and attention to detail.",
+              },
+              {
+                icon: <Palette className="h-8 w-8 text-purple-600" />, bg: "bg-purple-100", title: "Custom Designs", desc: "Personalized designs and custom solutions tailored to your specific needs.",
+              },
+              {
+                icon: <Shield className="h-8 w-8 text-orange-600" />, bg: "bg-orange-100", title: "Local Service", desc: "Conveniently located in Shaikpet, Hyderabad with personalized customer service.",
+              },
+            ].map((item, idx) => {
+              // Calculate translateX based on cursorX: -32px (left) to +32px (right)
+              const translate = (cursorX - 0.5) * 64; // -32 to +32
+              return (
+                <div
+                  key={item.title}
+                  className={`text-center p-6 transition-transform duration-500 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}
+                  style={{
+                    transform: `translateX(${translate}px)`,
+                    transitionDelay: `${idx * 100}ms`,
+                  }}
+                >
+                  <div className={`${item.bg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>{item.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                  <p className="text-gray-600">{item.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -25,6 +25,7 @@ import AddProductForm from './components/AddProductForm';
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <ProductProvider>
       <ToastProvider>
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
+
                   {/* Admin routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route path="login" element={<AdminLoginPage />} />
