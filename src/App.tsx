@@ -20,12 +20,10 @@ import Categories from './pages/admin/Categories';
 import Settings from './pages/admin/Settings';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import AddProductForm from './components/AddProductForm';
 
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
-
   return (
     <ProductProvider>
       <ToastProvider>
@@ -42,14 +40,12 @@ function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
-
                   {/* Admin routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route path="login" element={<AdminLoginPage />} />
                     <Route element={<ProtectedRoute />}>
                       <Route index element={<Dashboard />} />
                       <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="dashboard/new-product" element={<AddProductForm />} />
                       <Route path="customers" element={<Customers />} />
                       <Route path="orders" element={<Orders />} />
                       <Route path="categories" element={<Categories />} />

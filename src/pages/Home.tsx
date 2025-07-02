@@ -36,6 +36,14 @@ export default function Home() {
   const [inView, setInView] = useState(false);
   const [cursorX, setCursorX] = useState(0.5); // 0 (left) to 1 (right)
 
+  // Animation state for popular services section
+  const popularRef = useRef<HTMLDivElement>(null);
+  const [popularInView, setPopularInView] = useState(false);
+
+  // Animation state for digital & printing solutions section
+  const digitalRef = useRef<HTMLDivElement>(null);
+  const [digitalInView, setDigitalInView] = useState(false);
+
   useEffect(() => {
     // Check if features section is in view
     const handleScroll = () => {
@@ -43,6 +51,16 @@ export default function Home() {
         const rect = featuresRef.current.getBoundingClientRect();
         const inViewNow = rect.top < window.innerHeight && rect.bottom > 0;
         setInView(inViewNow);
+      }
+      if (popularRef.current) {
+        const rect = popularRef.current.getBoundingClientRect();
+        const inViewNow = rect.top < window.innerHeight && rect.bottom > 0;
+        setPopularInView(inViewNow);
+      }
+      if (digitalRef.current) {
+        const rect = digitalRef.current.getBoundingClientRect();
+        const inViewNow = rect.top < window.innerHeight && rect.bottom > 0;
+        setDigitalInView(inViewNow);
       }
     };
     window.addEventListener('scroll', handleScroll);
@@ -69,11 +87,11 @@ export default function Home() {
       <HeroCollage />
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50" ref={featuresRef}>
+      <section className="py-16 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900" ref={featuresRef}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose SVS Digitals?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-4">Why Choose SVS Digitals?</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
               Located in Shaikpet, Hyderabad, we provide exceptional printing services with personalized attention.
             </p>
           </div>
@@ -97,15 +115,15 @@ export default function Home() {
               return (
                 <div
                   key={item.title}
-                  className={`text-center p-6 transition-transform duration-500 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}
+                  className={`text-center p-6 bg-blue-950/80 rounded-xl shadow-lg transition-transform duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}
                   style={{
-                    transform: `translateX(${translate}px)`,
-                    transitionDelay: `${idx * 100}ms`,
+                    transform: `translateX(${translate}px) translateY(${inView ? 0 : -40}px) rotateZ(${inView ? 0 : -360}deg) scale(${inView ? 1 : 0.8})`,
+                    transitionDelay: `${idx * 120}ms`,
                   }}
                 >
-                  <div className={`${item.bg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>{item.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.desc}</p>
+                  <div className={`${item.bg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`} style={{boxShadow: '0 0 32px 0 rgba(0,0,0,0.10), 0 4px 16px 0 rgba(0,0,0,0.08)'}}>{item.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2 text-white">{item.title}</h3>
+                  <p className="text-gray-300">{item.desc}</p>
                 </div>
               );
             })}
@@ -114,19 +132,51 @@ export default function Home() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black" ref={popularRef}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Popular Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-4">Our Popular Services</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
               From business essentials to special occasions, we offer comprehensive printing solutions.
             </p>
           </div>
           
+          <style>{`
+            @keyframes card-slide-in-left {
+              0% { opacity: 0; transform: translateX(-80px) scale(0.96); }
+              80% { opacity: 1; transform: translateX(8px) scale(1.03); }
+              100% { opacity: 1; transform: translateX(0) scale(1); }
+            }
+            @keyframes card-slide-in-right {
+              0% { opacity: 0; transform: translateX(80px) scale(0.96); }
+              80% { opacity: 1; transform: translateX(-8px) scale(1.03); }
+              100% { opacity: 1; transform: translateX(0) scale(1); }
+            }
+            .animate-card-slide-in-left { animation: card-slide-in-left 0.9s cubic-bezier(.4,0,.2,1) both; }
+            .animate-card-slide-in-right { animation: card-slide-in-right 0.9s cubic-bezier(.4,0,.2,1) both; }
+          `}</style>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {featuredProducts.map((product, idx) => {
+              // Assign a unique background color for each card
+              const cardBgColors = [
+                'bg-gradient-to-br from-blue-800 via-blue-700 to-gray-900',
+                'bg-gradient-to-br from-green-800 via-green-700 to-gray-900',
+                'bg-gradient-to-br from-purple-800 via-purple-700 to-gray-900',
+                'bg-gradient-to-br from-pink-800 via-pink-700 to-gray-900',
+              ];
+              const animationClass = popularInView
+                ? (idx < 2 ? 'animate-card-slide-in-left' : 'animate-card-slide-in-right')
+                : 'opacity-0';
+              return (
+                <div
+                  className={`${cardBgColors[idx % cardBgColors.length]} rounded-xl shadow-lg p-2 transition-all duration-700 ${animationClass}`}
+                  style={popularInView ? { animationDelay: `${idx * 0.18 + 0.2}s` } : {}}
+                  key={product.id}
+                >
+                  <ProductCard product={product} />
+                </div>
+              );
+            })}
           </div>
           
           <div className="text-center mt-12">
@@ -142,18 +192,24 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" ref={digitalRef}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <style>{`
+                @keyframes digital-slide-in-left {
+                  0% { opacity: 0; transform: translateX(-80px) scale(0.96); }
+                  80% { opacity: 1; transform: translateX(8px) scale(1.03); }
+                  100% { opacity: 1; transform: translateX(0) scale(1); }
+                }
+                .animate-digital-slide-in-left { animation: digital-slide-in-left 0.9s cubic-bezier(.4,0,.2,1) both; }
+              `}</style>
+              <h2 className={`text-3xl font-bold mb-6 text-white transition-all duration-700 ${digitalInView ? 'animate-digital-slide-in-left' : 'opacity-0'}`} style={digitalInView ? { animationDelay: '0.1s' } : {}}>
                 Complete Digital & Printing Solutions
               </h2>
-              <p className="text-gray-600 mb-6">
-                We specialize in a wide range of printing services, from corporate materials to 
-                personal celebrations, all delivered with professional quality and care.
+              <p className={`mb-6 text-gray-200 text-lg transition-all duration-700 ${digitalInView ? 'animate-digital-slide-in-left' : 'opacity-0'}`} style={digitalInView ? { animationDelay: '0.3s' } : {}}>
+                We specialize in a wide range of printing services, from corporate materials to personal celebrations, all delivered with professional quality and care.
               </p>
-              
               <div className="space-y-4">
                 {[
                   'Business Cards & Corporate Materials',
@@ -162,12 +218,26 @@ export default function Home() {
                   'Custom T-Shirts & Apparel',
                   'Promotional Items (Mugs, Keychains)',
                   'Brochures & Marketing Materials'
-                ].map((service) => (
-                  <div key={service} className="flex items-center space-x-3">
-                    <Check className="h-5 w-5 text-green-500" />
-                    <span className="text-gray-700">{service}</span>
-                  </div>
-                ))}
+                ].map((service, idx) => {
+                  const serviceBgColors = [
+                    'bg-gradient-to-r from-teal-700 via-teal-600 to-gray-900',
+                    'bg-gradient-to-r from-orange-700 via-orange-600 to-gray-900',
+                    'bg-gradient-to-r from-indigo-800 via-indigo-700 to-gray-900',
+                    'bg-gradient-to-r from-rose-700 via-rose-600 to-gray-900',
+                    'bg-gradient-to-r from-lime-700 via-lime-600 to-gray-900',
+                    'bg-gradient-to-r from-sky-700 via-sky-600 to-gray-900',
+                  ];
+                  return (
+                    <div
+                      key={service}
+                      className={`flex items-center space-x-3 rounded-lg px-4 py-3 text-white shadow transition-all duration-700 ${digitalInView ? 'animate-digital-slide-in-left' : 'opacity-0'} ${serviceBgColors[idx % serviceBgColors.length]}`}
+                      style={digitalInView ? { animationDelay: `${0.5 + idx * 0.18}s` } : {}}
+                    >
+                      <Check className="h-5 w-5 text-white" />
+                      <span className="font-medium">{service}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             

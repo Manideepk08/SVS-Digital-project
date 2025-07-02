@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { products as rawHardcodedProducts } from '../data/products';
 
 export interface QuantityOption {
   qty: number;
@@ -13,15 +12,14 @@ export interface CustomizationOption {
 export interface Product {
   id: string;
   slug: string;
-  name: string;
+  title: string;
   description: string;
   price: number;
   originalPrice?: number;
   deliveryTime?: string;
   category?: string;
   bestSeller?: boolean;
-  image: string; // base64 (legacy)
-  images?: string[]; // new, for multiple images
+  image: string; // base64
   quantityOptions?: QuantityOption[];
   customizationOptions?: CustomizationOption[];
   whatsappNumber?: string;
@@ -47,22 +45,10 @@ export const useProductContext = () => {
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Load from localStorage and merge with hardcoded products on mount
+  // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('products');
-    let localProducts: Product[] = stored ? JSON.parse(stored) : [];
-    // Merge hardcoded and localStorage products, avoiding duplicates by id
-    const merged = [
-      ...rawHardcodedProducts.filter(hp => !localProducts.some(lp => lp.id === hp.id)),
-      ...localProducts
-    ];
-    // Ensure all hardcoded products conform to the local Product type (add slug if missing)
-    const hardcodedProducts: Product[] = merged.map((p: any) => ({
-      ...p,
-      slug: p.slug || (p.name ? p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : ''),
-      images: p.images || (p.image ? [p.image] : []),
-    }));
-    setProducts(hardcodedProducts);
+    const stored = localStorage.getItem("products");
+    if (stored) setProducts(JSON.parse(stored));
   }, []);
 
   // Save to localStorage on change
