@@ -1,29 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { products as initialProducts } from '../../data/products';
+import React, { useState, useMemo } from 'react';
 import { FiPlus, FiSearch } from 'react-icons/fi';
 import ProductGrid from '../../components/ProductGrid';
 import { useToast } from '../../context/ToastContext';
-import { Product } from '../../types';
-import { products as hardcodedProducts } from '../../data/products';
+import { useProductContext } from '../../context/ProductContext';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const { products } = useProductContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const { showToast } = useToast();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const stored = localStorage.getItem('products');
-    let localProducts = stored ? JSON.parse(stored) : [];
-    // Merge hardcoded and localStorage products, avoiding duplicates by id
-    const merged = [
-      ...hardcodedProducts.filter(hp => !localProducts.some(lp => lp.id === hp.id)),
-      ...localProducts
-    ];
-    setProducts(merged);
-  }, []);
 
   const categories = useMemo(() => {
     const allCategories = products.map((p) => p.category);
@@ -40,36 +27,6 @@ const Dashboard: React.FC = () => {
       );
     return filteredProducts;
   }, [products, searchTerm, filterCategory]);
-
-  const handleAddProduct = (product: Product) => {
-    let updated;
-    if (editingProduct) {
-      updated = products.map((p) => p.id === product.id ? { ...p, ...product } : p);
-    } else {
-      updated = [...products, product];
-    }
-    setProducts(updated);
-    localStorage.setItem('products', JSON.stringify(updated));
-    showToast(editingProduct ? 'Product updated successfully!' : 'Product added successfully!', 'success');
-    setEditingProduct(null);
-    setIsModalOpen(false);
-  };
-
-  const handleDelete = (productId: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      const updated = products.filter((p) => p.id !== productId);
-      setProducts(updated);
-      localStorage.setItem('products', JSON.stringify(updated));
-      showToast('Product deleted.', 'info');
-    }
-  };
-
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setIsModalOpen(true);
-  };
-
-  console.log('Loaded products:', products);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -123,8 +80,6 @@ const Dashboard: React.FC = () => {
       {/* Product Grid */}
       <ProductGrid
         products={sortedAndFilteredProducts}
-        onEdit={() => {}}
-        onDelete={() => {}}
         adminView
       />
       {sortedAndFilteredProducts.length === 0 && (

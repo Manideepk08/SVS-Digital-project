@@ -25,14 +25,17 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
     addItem(product);
   };
 
-  const handleEdit = () => {
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (!adminView) return;
+    // Prevent navigation if Edit or Delete button is clicked
+    if ((e.target as HTMLElement).closest('button')) return;
     navigate(`/admin/dashboard/new-product?edit=${product.slug}`);
   };
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       deleteProduct(product.slug);
-      window.location.reload(); // quick refresh to update dashboard
+      navigate('/admin/dashboard');
     }
   };
 
@@ -46,7 +49,10 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group relative flex flex-col h-full">
+    <div
+      className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group relative flex flex-col h-full ${adminView ? 'cursor-pointer' : ''}`}
+      onClick={handleCardClick}
+    >
       {/* Best Seller Badge */}
       {product.bestSeller && (
         <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold z-10 flex items-center space-x-1">
@@ -127,15 +133,9 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
             )}
           </button>
         )}
-        {/* Admin Edit/Delete Buttons at the bottom right */}
+        {/* Admin Edit/Delete Buttons always at the bottom */}
         {adminView && (
-          <div className="mt-4 flex justify-end space-x-2">
-            <button
-              onClick={handleEdit}
-              className="px-3 py-1 text-sm bg-yellow-400 hover:bg-yellow-500 text-white rounded"
-            >
-              Edit
-            </button>
+          <div className="flex justify-end space-x-2 mt-auto">
             <button
               onClick={handleDelete}
               className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded"
