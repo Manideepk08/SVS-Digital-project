@@ -29,12 +29,12 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
     if (!adminView) return;
     // Prevent navigation if Edit or Delete button is clicked
     if ((e.target as HTMLElement).closest('button')) return;
-    navigate(`/admin/dashboard/new-product?edit=${product.slug}`);
+    navigate(`/admin/dashboard/new-product?edit=${product.id}`);
   };
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      deleteProduct(product.slug);
+      deleteProduct(product.id);
       navigate('/admin/dashboard');
     }
   };
@@ -75,7 +75,7 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
       </div>
       <div className="p-4 flex-1 flex flex-col">
         <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">
-          {product.name || product.title}
+          {product.name}
         </h3>
         <p className="text-gray-600 text-sm mb-2 line-clamp-2">
           {product.description}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Truck, Shield } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
@@ -16,6 +16,7 @@ export default function Checkout() {
     pinCode: '',
     paymentMethod: 'card'
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -27,8 +28,8 @@ export default function Checkout() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Simulate order processing
-    alert('Order placed successfully! We will contact you shortly to confirm your order.');
-    clearCart();
+    const totalAmount = (total * 1.18).toFixed(2);
+    navigate('/payment', { state: { method: formData.paymentMethod, amount: totalAmount, customer: formData } });
   };
 
   if (items.length === 0) {

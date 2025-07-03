@@ -21,6 +21,7 @@ import Settings from './pages/admin/Settings';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AddProductForm from './components/AddProductForm';
+import PaymentPage from './pages/Payment';
 
 function App() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function App() {
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/payment" element={<PaymentPage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
 

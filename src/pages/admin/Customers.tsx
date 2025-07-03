@@ -1,11 +1,58 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { customers as initialCustomers, Customer } from '../../data/customers';
-import { orders as allOrders, Order } from '../../data/orders';
+// import { customers as initialCustomers, Customer } from '../../data/customers';
+import { Customer } from '../../data/customers';
+// import { orders as allOrders, Order } from '../../data/orders';
+import { products } from '../../data/products';
+
+export interface Order {
+  id: string;
+  customerName: string;
+  date: string;
+  total: number;
+  status: string;
+  items: { id: string; name: string; quantity: number; price: number }[];
+}
+
+const OrderDetailsModal = ({ order, onClose }: { order: Order; onClose: () => void }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-stretch justify-stretch">
+    <div className="bg-white w-full h-full flex flex-col justify-center items-center p-0 m-0 rounded-none shadow-none">
+      <div className="w-full max-w-3xl p-8">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Order Details - {order.id}</h2>
+        <div className="mb-4"><span className="font-semibold">Customer Name:</span> {order.customerName}</div>
+        <div className="mb-4"><span className="font-semibold">Order Date:</span> {order.date}</div>
+        <div className="mb-4"><span className="font-semibold">Total:</span> ₹{order.total.toFixed(2)}</div>
+        <div className="mb-4"><span className="font-semibold">Status:</span> {order.status}</div>
+        <div className="mb-4">
+          <span className="font-semibold">Items Ordered:</span>
+          <ul className="list-disc list-inside ml-4 mt-1">
+            {order.items.map(item => {
+              const product = products.find(p => p.id === item.id);
+              return (
+                <li key={item.id} className="flex items-center gap-4 mb-2">
+                  {product && (
+                    <img src={product.image} alt={product.name} className="w-12 h-12 object-cover rounded border" />
+                  )}
+                  <div>
+                    <div className="font-semibold">{product ? product.name : item.name}</div>
+                    <div className="text-sm text-gray-600">{item.quantity} x ₹{item.price.toFixed(2)}</div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <button onClick={onClose} className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">Close</button>
+      </div>
+    </div>
+  </div>
+);
 
 const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Customer | null; onClose: () => void; onSave: (customer: Customer) => void; orders: Order[] }) => {
   const [formData, setFormData] = useState<Customer | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const customerOrders = useMemo(() => {
     if (!customer) return [];
     return orders.filter(order => order.customerName === customer.name);
@@ -70,7 +117,7 @@ const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Cu
                           <td className="px-2 py-1 border-b">
                             <button
                               className="text-blue-700 underline hover:text-blue-900 cursor-pointer"
-                              onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
+                              onClick={() => { setSelectedOrder(order); setShowOrderModal(true); }}
                             >
                               {order.id}
                             </button>
@@ -79,24 +126,13 @@ const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Cu
                           <td className="px-2 py-1 border-b">₹{order.total.toFixed(2)}</td>
                           <td className="px-2 py-1 border-b">{order.status}</td>
                         </tr>
-                        {expandedOrderId === order.id && (
-                          <tr>
-                            <td colSpan={4} className="bg-gray-50 px-4 py-2 border-b">
-                              <div>
-                                <span className="font-semibold">Items Ordered:</span>
-                                <ul className="list-disc list-inside ml-4 mt-1">
-                                  {order.items.map(item => (
-                                    <li key={item.id}>{item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
                       </React.Fragment>
                     ))}
                   </tbody>
                 </table>
+                {showOrderModal && selectedOrder && (
+                  <OrderDetailsModal order={selectedOrder} onClose={() => setShowOrderModal(false)} />
+                )}
               </div>
             ) : (
               <p className="text-xs">No orders found for this customer.</p>
@@ -124,7 +160,8 @@ const EditCustomerModal = ({ customer, onClose, onSave, orders }: { customer: Cu
 };
 
 const CustomersPage: React.FC = () => {
-  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Customer; direction: string } | null>(null);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -132,11 +169,22 @@ const CustomersPage: React.FC = () => {
   const [segment, setSegment] = useState<'All' | 'HighSpenders' | 'FrequentBuyers' | 'Inactive'>('All');
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetch('http://localhost:4000/customers')
+      .then(res => res.json())
+      .then(data => setCustomers(data))
+      .catch(() => setCustomers([]));
+    fetch('http://localhost:4000/orders')
+      .then(res => res.json())
+      .then(data => setOrders(data))
+      .catch(() => setOrders([]));
+  }, []);
+
   // Helper: get last order date for a customer
   const getLastOrderDate = (customer: Customer) => {
-    const orders = allOrders.filter(order => order.customerName === customer.name);
-    if (orders.length === 0) return null;
-    return orders.map(o => o.date).sort().reverse()[0];
+    const customerOrders = orders.filter(order => order.customerName === customer.name);
+    if (customerOrders.length === 0) return null;
+    return customerOrders.map(o => o.date).sort().reverse()[0];
   };
 
   // Segmentation logic
@@ -153,7 +201,7 @@ const CustomersPage: React.FC = () => {
       }
       return true;
     });
-  }, [customers, segment, allOrders]);
+  }, [customers, segment, orders]);
 
   const sortedAndFilteredCustomers = useMemo(() => {
     let filteredCustomers = segmentedCustomers.filter(customer =>
@@ -189,10 +237,18 @@ const CustomersPage: React.FC = () => {
     handleCloseModal();
   };
 
-  const handleDeleteCustomer = (id: string) => {
-    // Add a confirmation dialog for better UX
+  const handleDeleteCustomer = async (id: string) => {
     if(window.confirm('Are you sure you want to delete this customer?')) {
-      setCustomers(customers.filter(customer => customer.id !== id));
+      try {
+        const res = await fetch(`http://localhost:4000/customers/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setCustomers(customers.filter(customer => customer.id !== id));
+        } else {
+          alert('Failed to delete customer from server.');
+        }
+      } catch (err) {
+        alert('Error deleting customer.');
+      }
     }
   };
   
@@ -288,7 +344,7 @@ const CustomersPage: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <EditCustomerModal customer={editingCustomer} onClose={handleCloseModal} onSave={handleSaveCustomer} orders={allOrders} />
+        <EditCustomerModal customer={editingCustomer} onClose={handleCloseModal} onSave={handleSaveCustomer} orders={orders} />
       )}
     </div>
   );

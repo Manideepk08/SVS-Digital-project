@@ -1,9 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { orders as initialOrders, Order } from '../../data/orders';
+import React, { useState, useMemo, useEffect } from 'react';
+// import { orders as initialOrders, Order } from '../../data/orders';
 import { customers } from '../../data/customers';
+import { products } from '../../data/products';
 
-const OrderDetailsModal = ({ order, onClose }: { order: Order; onClose: () => void; onStatusChange: (orderId: string, newStatus: Order['status']) => void; }) => {
-  const customer = customers.find(c => c.name === order.customerName);
+export interface Order {
+  id: string;
+  customerId?: string;
+  customerName: string;
+  date: string;
+  total: number;
+  status: string;
+  items: { id: string; name: string; quantity: number; price: number }[];
+}
+
+const OrderDetailsModal = ({ order, onClose, customers, onDelete }: { order: Order; onClose: () => void; customers: any[]; onDelete: (orderId: string) => void }) => {
+  const customer = customers.find(c => c.id === order.customerId);
   const isDelivered = order.status === 'Completed';
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-stretch justify-stretch">
@@ -31,17 +42,34 @@ const OrderDetailsModal = ({ order, onClose }: { order: Order; onClose: () => vo
           <div className="mt-10">
             <h3 className="text-2xl font-semibold text-gray-700 mb-4">Items Ordered</h3>
             <ul className="list-disc list-inside text-lg">
-              {order.items.map(item => (
-                <li key={item.id} className="mb-2">{item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</li>
-              ))}
+              {order.items.map(item => {
+                const product = products.find(p => p.id === item.id);
+                console.log('item.id', item.id, 'product', product);
+                return (
+                  <li key={item.id} className="mb-2 flex items-center gap-4">
+                    {product?.image && (
+                      <img src={product.image} alt={product?.name || ''} className="w-12 h-12 object-cover rounded border" />
+                    )}
+                    <span>{product?.name || item.name} - {item.quantity} x ₹{item.price.toFixed(2)}</span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
-          <button 
-            onClick={onClose} 
-            className="mt-10 bg-gradient-to-r from-blue-500 to-green-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
-          >
-            Close
-          </button>
+          <div className="flex gap-4 mt-10">
+            <button 
+              onClick={onClose} 
+              className="bg-gradient-to-r from-blue-500 to-green-400 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => onDelete(order.id)}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 ease-in-out"
+            >
+              Delete Order
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -49,7 +77,8 @@ const OrderDetailsModal = ({ order, onClose }: { order: Order; onClose: () => vo
 };
 
 const OrdersPage: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof Order; direction: string } | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -60,6 +89,17 @@ const OrdersPage: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+
+  useEffect(() => {
+    fetch('http://localhost:4000/orders')
+      .then(res => res.json())
+      .then(data => setOrders(data))
+      .catch(() => setOrders([]));
+    fetch('http://localhost:4000/customers')
+      .then(res => res.json())
+      .then(data => setCustomers(data))
+      .catch(() => setCustomers([]));
+  }, []);
 
   const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
     setOrders(prevOrders =>
@@ -78,6 +118,22 @@ const OrdersPage: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to delete this order?')) return;
+    try {
+      const res = await fetch(`http://localhost:4000/orders/${orderId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setOrders(orders => orders.filter(o => o.id !== orderId));
+        setIsModalOpen(false);
+        setSelectedOrder(null);
+      } else {
+        alert('Failed to delete order from server.');
+      }
+    } catch (err) {
+      alert('Failed to delete order');
+    }
   };
 
   const sortedAndFilteredOrders = useMemo(() => {
@@ -249,7 +305,7 @@ const OrdersPage: React.FC = () => {
       </div>
 
       {isModalOpen && selectedOrder && (
-        <OrderDetailsModal order={selectedOrder} onClose={handleCloseModal} onStatusChange={handleStatusChange} />
+        <OrderDetailsModal order={selectedOrder} onClose={handleCloseModal} customers={customers} onDelete={handleDeleteOrder} />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { products as rawHardcodedProducts } from '../data/products';
+// import { products as rawHardcodedProducts } from '../data/products';
 
 export interface QuantityOption {
   qty: number;
@@ -30,9 +30,9 @@ export interface Product {
 
 interface ProductContextType {
   products: Product[];
-  addProduct: (product: Product) => void;
+  addProduct: (product: Product) => Promise<void>;
   updateProduct: (product: Product) => void;
-  deleteProduct: (slug: string) => void;
+  deleteProduct: (id: string) => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
 }
 
@@ -47,34 +47,37 @@ export const useProductContext = () => {
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Load from localStorage and merge with hardcoded products on mount
+  // Fetch products from backend on mount
   useEffect(() => {
-    const stored = localStorage.getItem('products');
-    let localProducts: Product[] = stored ? JSON.parse(stored) : [];
-    // Merge hardcoded and localStorage products, avoiding duplicates by id
-    const merged = [
-      ...rawHardcodedProducts.filter(hp => !localProducts.some(lp => lp.id === hp.id)),
-      ...localProducts
-    ];
-    // Ensure all hardcoded products conform to the local Product type (add slug if missing)
-    const hardcodedProducts: Product[] = merged.map((p: any) => ({
-      ...p,
-      slug: p.slug || (p.name ? p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : ''),
-      images: p.images || (p.image ? [p.image] : []),
-    }));
-    setProducts(hardcodedProducts);
+    fetch('http://localhost:4000/products')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(() => setProducts([]));
   }, []);
 
-  // Save to localStorage on change
-  useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
+  const addProduct = async (product: Product) => {
+    const res = await fetch('http://localhost:4000/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product),
+    });
+    if (res.ok) {
+      const newProduct = await res.json();
+      setProducts(prev => [...prev, newProduct]);
+    }
+  };
 
-  const addProduct = (product: Product) => setProducts((prev) => [...prev, product]);
+  // updateProduct remains local for now
   const updateProduct = (product: Product) =>
     setProducts((prev) => prev.map((p) => (p.slug === product.slug ? product : p)));
-  const deleteProduct = (slug: string) =>
-    setProducts((prev) => prev.filter((p) => p.slug !== slug));
+
+  const deleteProduct = async (id: string) => {
+    const res = await fetch(`http://localhost:4000/products/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    }
+  };
+
   const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
 
   return (
