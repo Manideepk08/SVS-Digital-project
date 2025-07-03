@@ -31,7 +31,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 sticky top-0 z-50">
+    <header className="bg-pink-100 sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center space-x-3">
@@ -50,11 +50,10 @@ export default function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-semibold transition-colors ${
-                  isActive(item.href) ? 'text-blue-600 bg-blue-50' : ''
-                }`}
-              >
-                {item.name}
+                className={`relative px-4 py-2 rounded-lg text-lg font-semibold text-gray-800 transition-all duration-200 focus:outline-none shadow hover:bg-pink-300 bg-pink-200
+                  ${isActive(item.href) ? 'border-2 border-pink-400 bg-pink-400' : ''}`
+                }>
+                <span className="relative z-10">{item.name}</span>
               </Link>
             ))}
           </nav>
@@ -161,12 +160,12 @@ export default function Header() {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(item.href) ? 'text-blue-600 bg-blue-50' : ''
-                  }`}
+                  className={`relative px-4 py-2 rounded-lg text-base font-semibold text-gray-800 transition-all duration-200 focus:outline-none shadow hover:bg-pink-300 bg-pink-200
+                    ${isActive(item.href) ? 'border-2 border-pink-400 bg-pink-400' : ''}`
+                  }
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.name}
+                  <span className="relative z-10">{item.name}</span>
                 </Link>
               ))}
             </nav>

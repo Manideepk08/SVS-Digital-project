@@ -86,52 +86,7 @@ export default function Home() {
     <div className="bg-[#f9f6f2] min-h-screen">
       <HeroCollage />
 
-      {/* Features Section */}
-      <section className="py-16 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900" ref={featuresRef}>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white mb-4">Why Choose SVS Digitals?</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
-              Located in Shaikpet, Hyderabad, we provide exceptional printing services with personalized attention.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              {
-                icon: <Award className="h-8 w-8 text-blue-600" />, bg: "bg-blue-100", title: "Premium Quality", desc: "High-quality materials and professional printing technology for superior results.",
-              },
-              {
-                icon: <Clock className="h-8 w-8 text-green-600" />, bg: "bg-green-100", title: "Quick Service", desc: "Fast turnaround times without compromising on quality and attention to detail.",
-              },
-              {
-                icon: <Palette className="h-8 w-8 text-purple-600" />, bg: "bg-purple-100", title: "Custom Designs", desc: "Personalized designs and custom solutions tailored to your specific needs.",
-              },
-              {
-                icon: <Shield className="h-8 w-8 text-orange-600" />, bg: "bg-orange-100", title: "Local Service", desc: "Conveniently located in Shaikpet, Hyderabad with personalized customer service.",
-              },
-            ].map((item, idx) => {
-              // Calculate translateX based on cursorX: -32px (left) to +32px (right)
-              const translate = (cursorX - 0.5) * 64; // -32 to +32
-              return (
-                <div
-                  key={item.title}
-                  className={`text-center p-6 bg-blue-950/80 rounded-xl shadow-lg transition-transform duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}
-                  style={{
-                    transform: `translateX(${translate}px) translateY(${inView ? 0 : -40}px) rotateZ(${inView ? 0 : -360}deg) scale(${inView ? 1 : 0.8})`,
-                    transitionDelay: `${idx * 120}ms`,
-                  }}
-                >
-                  <div className={`${item.bg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`} style={{boxShadow: '0 0 32px 0 rgba(0,0,0,0.10), 0 4px 16px 0 rgba(0,0,0,0.08)'}}>{item.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2 text-white">{item.title}</h3>
-                  <p className="text-gray-300">{item.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
+      {/* Our Popular Services (Featured Products) */}
       <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-black" ref={popularRef}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -140,7 +95,6 @@ export default function Home() {
               From business essentials to special occasions, we offer comprehensive printing solutions.
             </p>
           </div>
-          
           <style>{`
             @keyframes card-slide-in-left {
               0% { opacity: 0; transform: translateX(-80px) scale(0.96); }
@@ -157,7 +111,6 @@ export default function Home() {
           `}</style>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product, idx) => {
-              // Assign a unique background color for each card
               const cardBgColors = [
                 'bg-gradient-to-br from-blue-800 via-blue-700 to-gray-900',
                 'bg-gradient-to-br from-green-800 via-green-700 to-gray-900',
@@ -178,7 +131,6 @@ export default function Home() {
               );
             })}
           </div>
-          
           <div className="text-center mt-12">
             <Link
               to="/products"
@@ -248,6 +200,51 @@ export default function Home() {
                 className="rounded-lg shadow-lg"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section (moved) */}
+      <section className="py-16 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900" ref={featuresRef}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">Why Choose SVS Digitals?</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              Located in Shaikpet, Hyderabad, we provide exceptional printing services with personalized attention.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              {
+                icon: <Award className="h-8 w-8 text-blue-600" />, bg: "bg-blue-100", title: "Premium Quality", desc: "High-quality materials and professional printing technology for superior results.",
+              },
+              {
+                icon: <Clock className="h-8 w-8 text-green-600" />, bg: "bg-green-100", title: "Quick Service", desc: "Fast turnaround times without compromising on quality and attention to detail.",
+              },
+              {
+                icon: <Palette className="h-8 w-8 text-purple-600" />, bg: "bg-purple-100", title: "Custom Designs", desc: "Personalized designs and custom solutions tailored to your specific needs.",
+              },
+              {
+                icon: <Shield className="h-8 w-8 text-orange-600" />, bg: "bg-orange-100", title: "Local Service", desc: "Conveniently located in Shaikpet, Hyderabad with personalized customer service.",
+              },
+            ].map((item, idx) => {
+              // Calculate translateX based on cursorX: -32px (left) to +32px (right)
+              const translate = (cursorX - 0.5) * 64; // -32 to +32
+              return (
+                <div
+                  key={item.title}
+                  className={`text-center p-6 bg-blue-950/80 rounded-xl shadow-lg transition-transform duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}
+                  style={{
+                    transform: `translateX(${translate}px) translateY(${inView ? 0 : -40}px) rotateZ(${inView ? 0 : -360}deg) scale(${inView ? 1 : 0.8})`,
+                    transitionDelay: `${idx * 120}ms`,
+                  }}
+                >
+                  <div className={`${item.bg} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`} style={{boxShadow: '0 0 32px 0 rgba(0,0,0,0.10), 0 4px 16px 0 rgba(0,0,0,0.08)'}}>{item.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2 text-white">{item.title}</h3>
+                  <p className="text-gray-300">{item.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

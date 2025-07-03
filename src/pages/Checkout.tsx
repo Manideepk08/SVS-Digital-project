@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Truck, Shield } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { products } from '../data/products';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const buyNowId = searchParams.get('buyNow');
+  let buyNowProduct = null;
+  if (buyNowId) {
+    buyNowProduct = products.find(p => p.id === buyNowId);
+  }
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -31,7 +39,7 @@ export default function Checkout() {
     clearCart();
   };
 
-  if (items.length === 0) {
+  if (!buyNowProduct && items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -251,28 +259,45 @@ export default function Checkout() {
               <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
               
               <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={item.product.id} className="flex items-center space-x-3">
+                {buyNowProduct ? (
+                  <div className="flex items-center space-x-3">
                     <img
-                      src={item.product.image}
-                      alt={item.product.name}
+                      src={buyNowProduct.image}
+                      alt={buyNowProduct.name}
                       className="h-12 w-12 object-cover rounded"
                     />
                     <div className="flex-1">
-                      <h3 className="text-sm font-medium">{item.product.name}</h3>
-                      <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      <h3 className="text-sm font-medium">{buyNowProduct.name}</h3>
+                      <p className="text-sm text-gray-500">Qty: {buyNowProduct.minQuantity || 1}</p>
                     </div>
                     <span className="text-sm font-medium">
-                      ₹{(item.product.price * item.quantity).toFixed(2)}
+                      ₹{(buyNowProduct.price * (buyNowProduct.minQuantity || 1)).toFixed(2)}
                     </span>
                   </div>
-                ))}
+                ) : (
+                  items.map((item) => (
+                    <div key={item.product.id} className="flex items-center space-x-3">
+                      <img
+                        src={item.product.image}
+                        alt={item.product.name}
+                        className="h-12 w-12 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-sm font-medium">{item.product.name}</h3>
+                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                      </div>
+                      <span className="text-sm font-medium">
+                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
               
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>₹{total.toFixed(2)}</span>
+                  <span>₹{buyNowProduct ? (buyNowProduct.price * (buyNowProduct.minQuantity || 1)).toFixed(2) : total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Delivery</span>
@@ -280,14 +305,14 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between">
                   <span>GST (18%)</span>
-                  <span>₹{(total * 0.18).toFixed(2)}</span>
+                  <span>₹{buyNowProduct ? ((buyNowProduct.price * (buyNowProduct.minQuantity || 1)) * 0.18).toFixed(2) : (total * 0.18).toFixed(2)}</span>
                 </div>
               </div>
               
               <div className="border-t pt-4 mb-6">
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
-                  <span>₹{(total * 1.18).toFixed(2)}</span>
+                  <span>₹{buyNowProduct ? ((buyNowProduct.price * (buyNowProduct.minQuantity || 1)) * 1.18).toFixed(2) : (total * 1.18).toFixed(2)}</span>
                 </div>
               </div>
 

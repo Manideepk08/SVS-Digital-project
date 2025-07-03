@@ -20,6 +20,8 @@ import Categories from './pages/admin/Categories';
 import Settings from './pages/admin/Settings';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
+import GoToCartButton from './components/GoToCartButton';
 
 function App() {
   const location = useLocation();
@@ -31,6 +33,8 @@ function App() {
           <CartProvider>
             <div className="min-h-screen bg-gray-50">
               {!isAdminRoute && <Header />}
+              <GoToCartButton />
+              <ScrollToTop />
               <main>
                 <Routes>
                   <Route path="/" element={<Home />} />
