@@ -13,15 +13,14 @@ export interface CustomizationOption {
 export interface Product {
   id: string;
   slug: string;
-  name: string;
+  title: string;
   description: string;
   price: number;
   originalPrice?: number;
   deliveryTime?: string;
   category?: string;
   bestSeller?: boolean;
-  image: string; // base64 (legacy)
-  images?: string[]; // new, for multiple images
+  image: string; // base64
   quantityOptions?: QuantityOption[];
   customizationOptions?: CustomizationOption[];
   whatsappNumber?: string;

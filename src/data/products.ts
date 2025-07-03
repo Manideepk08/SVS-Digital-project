@@ -4,7 +4,6 @@ export const products: Product[] = [
   // Business Essentials
   {
     id: '1',
-    slug: 'business-cards',
     name: 'Business Cards',
     description: 'Professional business cards with premium finishes - Single side printing',
     price: 350,
@@ -20,7 +19,6 @@ export const products: Product[] = [
   },
   {
     id: '2',
-    slug: 'id-cards-pvc',
     name: 'ID Cards (PVC)',
     description: 'Durable PVC ID cards with photo printing and custom design',
     price: 75,
@@ -34,7 +32,6 @@ export const products: Product[] = [
   },
   {
     id: '3',
-    slug: 'letterheads',
     name: 'Letterheads',
     description: 'Professional letterheads for business correspondence',
     price: 600,
@@ -48,7 +45,6 @@ export const products: Product[] = [
   },
   {
     id: '4',
-    slug: 'bill-books',
     name: 'Bill Books',
     description: 'Custom bill books with company details and numbering',
     price: 0,
@@ -63,7 +59,6 @@ export const products: Product[] = [
   },
   {
     id: '5',
-    slug: 'corporate-brochures',
     name: 'Corporate Brochures',
     description: 'High-quality brochures for marketing and business promotion',
     price: 1500,
@@ -79,7 +74,6 @@ export const products: Product[] = [
   // Promotional Items
   {
     id: '6',
-    slug: 'custom-t-shirts',
     name: 'Custom T-Shirts',
     description: 'Premium quality t-shirts with custom printing and designs',
     price: 499,
@@ -95,7 +89,6 @@ export const products: Product[] = [
   },
   {
     id: '7',
-    slug: 'photo-mugs',
     name: 'Photo Mugs',
     description: 'Personalized ceramic mugs with photo printing',
     price: 299,
@@ -110,7 +103,6 @@ export const products: Product[] = [
   },
   {
     id: '8',
-    slug: 'branded-pens',
     name: 'Branded Pens',
     description: 'Custom branded pens for corporate gifting and promotions',
     price: 15,
@@ -125,7 +117,6 @@ export const products: Product[] = [
   },
   {
     id: '9',
-    slug: 'lanyards-with-tags',
     name: 'Lanyards with Tags',
     description: 'Custom lanyards with ID card holders for events and offices',
     price: 40,
@@ -140,7 +131,6 @@ export const products: Product[] = [
   },
   {
     id: '10',
-    slug: 'custom-keychains',
     name: 'Custom Keychains',
     description: 'Personalized keychains in various materials and designs',
     price: 75,
@@ -157,7 +147,6 @@ export const products: Product[] = [
   // Academic Solutions
   {
     id: '11',
-    slug: 'school-diaries',
     name: 'School Diaries',
     description: 'Custom school diaries with academic calendar and school branding',
     price: 0,
@@ -173,7 +162,6 @@ export const products: Product[] = [
   },
   {
     id: '12',
-    slug: 'report-cards',
     name: 'Report Cards',
     description: 'Professional report cards with school branding and security features',
     price: 25,
@@ -188,7 +176,6 @@ export const products: Product[] = [
   },
   {
     id: '13',
-    slug: 'certificates',
     name: 'Certificates',
     description: 'Award certificates for academic and professional recognition',
     price: 40,
@@ -203,7 +190,6 @@ export const products: Product[] = [
   },
   {
     id: '14',
-    slug: 'academic-calendars',
     name: 'Academic Calendars',
     description: 'Custom academic calendars for schools and educational institutions',
     price: 150,

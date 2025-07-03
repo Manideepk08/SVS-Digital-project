@@ -180,12 +180,17 @@ export default function About() {
             </div>
             
             <div>
-              <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <MapPin className="h-12 w-12 mx-auto mb-2" />
-                  <p className="font-semibold">SVS Digitals</p>
-                  <p className="text-sm">Shaikpet, Hyderabad</p>
-                </div>
+              <div className="bg-gray-200 rounded-lg h-80 flex items-center justify-center p-2">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.1029929185443!2d78.3905094!3d17.4068443!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb96b0240410eb%3A0x7939ddc4b9ed2c6d!2sSVS%20ID%20CARDS!5e0!3m2!1sen!2sin!4v1751460451027!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, borderRadius: '0.5rem', minWidth: '200px', height: '100%' }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="SVS Digitals Location"
+                ></iframe>
               </div>
             </div>
           </div>

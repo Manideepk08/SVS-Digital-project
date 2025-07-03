@@ -2,7 +2,12 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import Toast from '../components/Toast';
 
 interface ToastContextType {
-  showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  showToast: (
+    message: string,
+    type?: 'success' | 'error' | 'info',
+    actionLabel?: string,
+    onAction?: () => void
+  ) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -14,12 +19,25 @@ export const useToast = () => {
 };
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [toast, setToast] = useState<
+    | { message: string; type: 'success' | 'error' | 'info'; actionLabel?: string; onAction?: () => void }
+    | null
+  >(null);
 
-  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  }, []);
+  const showToast = useCallback(
+    (
+      message: string,
+      type: 'success' | 'error' | 'info' = 'info',
+      actionLabel?: string,
+      onAction?: () => void
+    ) => {
+      setToast({ message, type, actionLabel, onAction });
+      if (!(actionLabel && onAction)) {
+        setTimeout(() => setToast(null), 3000);
+      }
+    },
+    []
+  );
 
   const handleClose = () => setToast(null);
 
@@ -27,7 +45,13 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={handleClose} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={handleClose}
+          actionLabel={toast.actionLabel}
+          onAction={toast.onAction}
+        />
       )}
     </ToastContext.Provider>
   );

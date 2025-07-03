@@ -242,26 +242,39 @@ export default function ProductDetail() {
 
               {/* Action Buttons */}
               <div className="space-y-4">
-                <button
-                  onClick={handleAddToCart}
-                  className={`w-full px-6 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors ${
-                    product.customQuote
-                      ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
-                >
-                  {product.customQuote ? (
-                    <>
-                      <MessageCircle className="h-5 w-5" />
-                      <span>Get Custom Quote</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="h-5 w-5" />
-                      <span>Add to Cart</span>
-                    </>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={handleAddToCart}
+                    className={`w-full sm:w-auto flex-1 px-6 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors ${
+                      product.customQuote
+                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                        : 'bg-green-500 hover:bg-green-600 text-white'
+                    }`}
+                  >
+                    {product.customQuote ? (
+                      <>
+                        <MessageCircle className="h-5 w-5" />
+                        <span>Get Custom Quote</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-5 w-5" />
+                        <span>Add to Cart</span>
+                      </>
+                    )}
+                  </button>
+                  {!product.customQuote && (
+                    <button
+                      onClick={() => {
+                        handleAddToCart();
+                        window.location.href = '/checkout';
+                      }}
+                      className="w-full sm:w-auto flex-1 px-6 py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-colors bg-pink-500 hover:bg-pink-600 text-white"
+                    >
+                      <span>Buy Now</span>
+                    </button>
                   )}
-                </button>
+                </div>
 
                 {/* Quick Contact */}
                 <div className="grid grid-cols-2 gap-4">

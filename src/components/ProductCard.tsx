@@ -4,6 +4,7 @@ import { ShoppingCart, Star, Clock, Award, MessageCircle } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { useProductContext } from '../context/ProductContext';
+import { useToast } from '../context/ToastContext';
 
 interface ProductCardProps {
   product: Product;
@@ -11,8 +12,9 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, adminView = false }: ProductCardProps) {
-  const { addItem } = useCart();
+  const { addItem, clearCart } = useCart();
   const { deleteProduct } = useProductContext();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -23,6 +25,7 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
       return;
     }
     addItem(product);
+    showToast('Added to cart!', 'success');
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
@@ -49,10 +52,7 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
   };
 
   return (
-    <div
-      className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group relative flex flex-col h-full ${adminView ? 'cursor-pointer' : ''}`}
-      onClick={handleCardClick}
-    >
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group relative flex flex-col h-full">
       {/* Best Seller Badge */}
       {product.bestSeller && (
         <div className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold z-10 flex items-center space-x-1">
@@ -112,30 +112,43 @@ export default function ProductCard({ product, adminView = false }: ProductCardP
         </span>
         {/* Hide Add to Cart/Get Quote in admin view */}
         {!adminView && (
-          <button
-            onClick={handleAddToCart}
-            className={`w-full mt-3 px-4 py-2 rounded-lg flex items-center justify-center space-x-2 transition-colors font-medium ${
-              product.customQuote
-                ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            }`}
-          >
-            {product.customQuote ? (
-              <>
-                <MessageCircle className="h-4 w-4" />
-                <span>Get Quote</span>
-              </>
-            ) : (
-              <>
+          product.customQuote ? (
+            <button
+              onClick={handleAddToCart}
+              className="w-full mt-3 px-3 py-1 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Get Quote</span>
+            </button>
+          ) : (
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleAddToCart}
+                className="w-1/2 px-3 py-1 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm font-medium bg-green-500 hover:bg-green-600 text-white"
+              >
                 <ShoppingCart className="h-4 w-4" />
                 <span>Add to Cart</span>
-              </>
-            )}
-          </button>
+              </button>
+              <button
+                onClick={() => {
+                  window.location.href = `/checkout?buyNow=${product.id}`;
+                }}
+                className="w-1/2 px-3 py-1 rounded-md flex items-center justify-center space-x-2 transition-colors text-sm font-medium bg-pink-500 hover:bg-pink-600 text-white"
+              >
+                <span>Buy Now</span>
+              </button>
+            </div>
+          )
         )}
-        {/* Admin Edit/Delete Buttons always at the bottom */}
+        {/* Admin Edit/Delete Buttons at the bottom right */}
         {adminView && (
-          <div className="flex justify-end space-x-2 mt-auto">
+          <div className="mt-4 flex justify-end space-x-2">
+            <button
+              onClick={handleEdit}
+              className="px-3 py-1 text-sm bg-yellow-400 hover:bg-yellow-500 text-white rounded"
+            >
+              Edit
+            </button>
             <button
               onClick={handleDelete}
               className="px-3 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded"

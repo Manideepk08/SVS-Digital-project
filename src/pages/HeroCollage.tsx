@@ -3,7 +3,7 @@ import { Printer } from 'lucide-react';
 
 const productMockups = [
   { src: "/product images/mugs , cups , bottles.png", name: "Custom Mug", style: "left-[150px] top-[80px] w-[180px] h-[220px] z-10 animate-float delay-0" },
-  { src: "/product images/t-shirts.png", name: "Custom T-Shirt", style: "right-[200px] top-[400px] w-[180px] h-[220px] z-10 animate-float delay-200" },
+  { src: "/product images/t-shirts.png", name: "Custom T-Shirt", style: "right-[200px] top-[450px] w-[180px] h-[220px] z-10 animate-float delay-200" },
   { src: "/product images/bussiness cards.png", name: "Business Cards", style: "left-[-40px] bottom-[80px] w-[180px] h-[220px] z-10 animate-float delay-400" },
 ];
 
@@ -66,7 +66,7 @@ export default function HeroCollage() {
   }, []);
 
   return (
-    <section className="relative min-h-[700px] flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 overflow-hidden">
+    <section className="relative min-h-[700px] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 via-blue-100 to-white overflow-hidden">
       {/* Floating animation keyframes and jump-in/out keyframes */}
       <style>{`
         @keyframes float {
@@ -119,15 +119,28 @@ export default function HeroCollage() {
         .animate-jump-out-left { animation: jump-out-left 1.2s cubic-bezier(.4,0,.2,1) forwards; }
         .animate-jump-out-right { animation: jump-out-right 1.2s cubic-bezier(.4,0,.2,1) forwards; }
         .animate-jump-out-up { animation: jump-out-up 1.2s cubic-bezier(.4,0,.2,1) forwards; }
+        @keyframes hero-fall-down {
+          0% { opacity: 0; transform: translateY(-120px) scaleY(1.2); }
+          60% { opacity: 1; transform: translateY(12px) scaleY(0.97); }
+          80% { opacity: 1; transform: translateY(-6px) scaleY(1.03); }
+          100% { opacity: 1; transform: translateY(0) scaleY(1); }
+        }
+        .animate-hero-headline { animation: hero-fall-down 1.2s cubic-bezier(.4,0,.2,1) 0.2s both; }
+        .animate-hero-subheadline { animation: hero-fall-down 1.2s cubic-bezier(.4,0,.2,1) 1.1s both; }
+        @keyframes hero-logo-fall {
+          0% { opacity: 0; transform: translateY(-220px) scaleY(1.2); }
+          60% { opacity: 1; transform: translateY(18px) scaleY(0.97); }
+          80% { opacity: 1; transform: translateY(-8px) scaleY(1.03); }
+          100% { opacity: 1; transform: translateY(0) scaleY(1); }
+        }
+        .animate-hero-logo { animation: hero-logo-fall 1.7s cubic-bezier(.4,0,.2,1) 0.1s both; }
       `}</style>
-      {/* Watermark */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7vw] font-extrabold text-white opacity-10 select-none pointer-events-none whitespace-nowrap tracking-widest z-0" style={{letterSpacing: '0.2em'}}>SVSDIGITALS</div>
       <div className="relative z-10 w-full max-w-6xl mx-auto pt-16 pb-8 px-4">
         {/* Floating Elements */}
         <div className="relative w-full h-[600px] mx-auto">
           {/* Centered Logo and Text Overlay */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-30 text-center pointer-events-none select-none px-8">
-            <div className="flex items-center space-x-3 mb-2">
+          <div className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-[38%] flex flex-col items-center justify-center z-30 text-center pointer-events-none select-none px-8">
+            <div className="flex items-center space-x-3 mb-2 opacity-0 animate-hero-logo">
               <div className="bg-gradient-to-r from-blue-600 to-green-500 p-2 rounded-lg">
                 <Printer className="h-10 w-10 text-white" />
               </div>
@@ -136,7 +149,15 @@ export default function HeroCollage() {
                 <span className="text-4xl md:text-5xl font-extrabold text-green-500">digitals</span>
               </div>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 drop-shadow-lg">Professional Printing & Digital Services in Hyderabad</h1>
+            {/* Animated Headline */}
+            <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4 animate-hero-headline">
+              <span className="block">Best <span className="text-green-500">Printing</span> & Digital</span>
+              <span className="block">Solutions in Hyderabad</span>
+            </h1>
+            {/* Animated Subheadline */}
+            <p className="text-lg md:text-2xl text-gray-700 font-medium opacity-0 animate-hero-subheadline">
+              Elevate your brand with premium printing, design, and digital services tailored for you.
+            </p>
           </div>
           {/* Product Mockups with floating animation and larger images, no price */}
           {productMockups.map((mockup, i) => (
@@ -154,19 +175,26 @@ export default function HeroCollage() {
         </div>
         {/* Features Section with scroll-triggered jump-in/out animation */}
         <div ref={featuresRef} className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          {features.map((feature, idx) => (
-            <div
-              key={feature.title}
-              className={`bg-white rounded-xl shadow p-8 flex flex-col items-center transition-all duration-700 ${showFeatures ? feature.in : feature.out}`}
-              style={{ animationDelay: '0.4s' }}
-            >
-              <div className="w-16 h-16 flex items-center justify-center rounded-full bg-orange-200 text-3xl mb-4">
-                {feature.icon}
+          {features.map((feature, idx) => {
+            const cardBgColors = [
+              'bg-gradient-to-br from-fuchsia-900 via-pink-800 to-rose-900',
+              'bg-gradient-to-br from-cyan-900 via-sky-800 to-blue-900',
+              'bg-gradient-to-br from-amber-900 via-yellow-800 to-orange-900',
+            ];
+            return (
+              <div
+                key={feature.title}
+                className={`${cardBgColors[idx % cardBgColors.length]} rounded-xl shadow p-8 flex flex-col items-center transition-all duration-700 ${showFeatures ? feature.in : feature.out}`}
+                style={{ animationDelay: '0.4s' }}
+              >
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 text-3xl mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="font-bold text-xl mb-2 text-white">{feature.title}</h3>
+                <p className="text-white/80">{feature.desc}</p>
               </div>
-              <h3 className="font-bold text-xl mb-2 text-gray-800">{feature.title}</h3>
-              <p className="text-gray-600">{feature.desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -26,7 +26,6 @@ import PaymentPage from './pages/Payment';
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
-
   return (
     <ProductProvider>
       <ToastProvider>
@@ -34,6 +33,8 @@ function App() {
           <CartProvider>
             <div className="min-h-screen bg-gray-50">
               {!isAdminRoute && <Header />}
+              <GoToCartButton />
+              <ScrollToTop />
               <main>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -44,14 +45,12 @@ function App() {
                   <Route path="/payment" element={<PaymentPage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
-
                   {/* Admin routes */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route path="login" element={<AdminLoginPage />} />
                     <Route element={<ProtectedRoute />}>
                       <Route index element={<Dashboard />} />
                       <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="dashboard/new-product" element={<AddProductForm />} />
                       <Route path="customers" element={<Customers />} />
                       <Route path="orders" element={<Orders />} />
                       <Route path="categories" element={<Categories />} />
